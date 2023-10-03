@@ -42,5 +42,11 @@ public class ProcessManager {
         }
     }
 
-    // Continue with delete and get methods...
+    public void delete(String[] args) {
+
+    }
+
+    public void get(String[] args) {
+
+    }
 }

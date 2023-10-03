@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class DefaultScheduler implements Scheduler{
     @Override
-    public void schedule(Set<Node> nodes, Pod p) {
+    public void schedule(Set<? extends Node> nodes, Pod p) {
         Set<Node> availableNodes = new HashSet<Node>(nodes);
         Worker worker = getMostAvailableWorker(availableNodes);
 
