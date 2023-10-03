@@ -9,37 +9,35 @@ import lombok.ToString;
 
 import java.util.UUID;
 
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 public class Pod {
     final private UUID uuid = UUID.randomUUID();
-
-    @NonNull
-    private String name;
-
-    @NonNull
-    private double requiredCPU;
-
-    @NonNull
-    private double requiredMemory;
-
-    @NonNull
-    private double maximumLatency;
-
-    @NonNull
-    private Container container;
+    final private String name;
+    final private double requiredCPU;
+    final private double requiredMemory;
+    final private double maximumLatency;
+    final private Container container;
 
     @Setter
     private PodStatus podStatus;
 
-    public Pod(String name, double requiredCPU, double requiredMemory, double maximumLatency, Container container, PodStatus podStatus) {
+    public Pod(String name, double requiredCPU, double requiredMemory, Container container) {
+        this.name = name;
+        this.requiredCPU = requiredCPU;
+        this.requiredMemory = requiredMemory;
+        this.maximumLatency = 0;
+        this.container = container;
+        this.podStatus = PodStatus.READY;
+    }
+
+    public Pod(String name, double requiredCPU, double requiredMemory, double maximumLatency, Container container) {
         this.name = name;
         this.requiredCPU = requiredCPU;
         this.requiredMemory = requiredMemory;
         this.maximumLatency = maximumLatency;
         this.container = container;
-        this.podStatus = podStatus;
+        this.podStatus = PodStatus.READY;
     }
 
     public void run() {

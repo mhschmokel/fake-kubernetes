@@ -1,13 +1,22 @@
-package br.unisinos;
+package main;
 
 import console.Console;
+import k8.DefaultScheduler;
+import k8.K8;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Main {
-
+    public static Set<K8> k8Instances = new HashSet<>();
+    public static K8 currentK8;
     public static void main(String[] args) {
         Console console = new Console();
         console.start();
 
+        Main.currentK8 = new K8("c1");
+        currentK8.createCluster("c1", new DefaultScheduler());
+        currentK8.createWorkerNode("worker1", 2, 2048, 30);
 
 
 //        Console console = new Console();
@@ -25,5 +34,16 @@ public class Main {
 //
 //        console.displayAllNodes(c1);
 //        console.displayAllPods(c1);
+    }
+
+    public K8 getK8ByName(String name) {
+        K8 k8 = null;
+        for (K8 k : k8Instances) {
+            if (k.getName().equals(name)) {
+                k8 = k;
+                break;
+            }
+        }
+        return k8;
     }
 }

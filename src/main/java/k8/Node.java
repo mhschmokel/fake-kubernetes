@@ -76,13 +76,14 @@ public abstract class Node {
     @Override
     public String toString() {
         long numOfPods = pods.size();
-
-        return this.getName() + "       "
-                + this.getTotalCPU() + "       "
-                + this.getTotalMemory() + "            "
-                + this.getAvailableCPU() + "              "
-                + this.getAvailableMemory() + "          "
-                + this.getLatency() + "         "
+        int emptySize = 20 - this.getName().length();
+        return this.getName() + " ".repeat(Math.max(0, emptySize))
+                + this.getNodeType().toString() + " ".repeat(3)
+                + this.getTotalCPU() + " ".repeat(3)
+                + this.getTotalMemory() + " ".repeat(5)
+                + this.getAvailableCPU() + " ".repeat(5)
+                + this.getAvailableMemory() + " ".repeat(5)
+                + this.getLatency() + " ".repeat(8)
                 + numOfPods;
     }
 }

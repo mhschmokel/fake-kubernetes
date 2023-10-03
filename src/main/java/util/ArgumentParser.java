@@ -16,4 +16,8 @@ public class ArgumentParser {
         }
         return argMap;
     }
+
+    public static String parseCommand(String[] args) {
+        return args[1];
+    }
 }

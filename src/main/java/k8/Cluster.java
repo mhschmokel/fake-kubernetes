@@ -4,12 +4,15 @@ import lombok.Getter;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 public class Cluster {
+    final private UUID uuid = UUID.randomUUID();
     final private String name;
     final private Scheduler scheduler;
     final private Set<Node> nodes = new HashSet<Node>();
+    final private Set<Pod> pods = new HashSet<>();
 
     public Cluster(String name, Scheduler scheduler) {
         this.name = name;
@@ -24,6 +27,7 @@ public class Cluster {
     }
 
     public void schedulePod(Pod p) {
+        pods.add(p);
         scheduler.schedule(getWorkerNodes(), p);
     }
 
