@@ -7,9 +7,10 @@ public class DefaultScheduler implements Scheduler{
     @Override
     public void schedule(Set<? extends Node> nodes, Pod p) {
         Set<Node> availableNodes = new HashSet<Node>(nodes);
-        Worker worker = getMostAvailableWorker(availableNodes);
+        Worker worker;
 
         while(!availableNodes.isEmpty()) {
+            worker = getMostAvailableWorker(availableNodes);
             if (hasEnoughResources(worker, p)) {
                 worker.addPod(p);
                 break;
@@ -34,8 +35,8 @@ public class DefaultScheduler implements Scheduler{
             Worker w = (Worker)node;
             double cpuPercentage;
             double memoryPercentage;
-            cpuPercentage = w.getAvailableCPU() / w.getTotalCPU();
-            memoryPercentage = w.getAvailableMemory() / w.getTotalMemory();
+            cpuPercentage = w.getCpuInUse() / w.getTotalCPU();
+            memoryPercentage = w.getMemoryInUse() / w.getTotalMemory();
 
             if (cpuPercentage < maxFreeCPUPercentage || memoryPercentage < maxFreeMemoryPercentage) {
                 maxFreeCPUPercentage = cpuPercentage;

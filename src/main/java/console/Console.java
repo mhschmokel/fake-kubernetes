@@ -4,6 +4,7 @@ import k8.Cluster;
 import k8.Node;
 import k8.Pod;
 import k8.Worker;
+import main.Main;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +25,7 @@ public class Console extends Thread {
             System.out.print("> ");
             String command = scanner.nextLine();
             if (command.equals("exit")) {
+                Main.currentK8.exit();
                 break;
             }
             processCommand(command);

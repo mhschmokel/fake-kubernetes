@@ -1,6 +1,7 @@
 package console;
 
 import k8.Container;
+import k8.CustomScheduler;
 import k8.K8;
 import k8.Node;
 import k8.Pod;
@@ -16,14 +17,15 @@ public class ProcessManager {
         switch (ArgumentParser.parseCommand(args)) {
             case "cluster": // Create cluster -n name
                 String name = argMap.get("-n");
+                String scheduler = argMap.get("-s");
                 if (!this.hasMissingArgs(name)) {
-                    if (Main.currentK8 == null) {
-                        K8 k8 = new K8(name);
-                        Main.currentK8 = k8;
-                        Main.k8Instances.add(k8);
+                    if (scheduler != null) {
+                        Main.currentK8.createCluster(name, new CustomScheduler());
+                        System.out.println("Cluster " + name + " created.");
+                    } else {
+                        Main.currentK8.createCluster(name);
+                        System.out.println("Cluster " + name + " created.");
                     }
-                    Main.currentK8.createCluster(name);
-                    System.out.println("Cluster " + name + " created.");
                 }
                 break;
             default:
@@ -65,11 +67,27 @@ public class ProcessManager {
             default:
                 System.out.println("Invalid add command format");
         }
-
-
     }
 
     public void delete(String[] args) {
+        Map<String, String> argMap = ArgumentParser.parse(args, 2);
+        String name = argMap.get("-n");
+
+        switch (ArgumentParser.parseCommand(args)) {
+            case "pod":
+                if (!this.hasMissingArgs(name)) {
+                    Main.currentK8.deletePodByName(name);
+                    System.out.println("Pod " + name + " deleted.");
+                    break;
+                }
+            case "node":
+                if (!this.hasMissingArgs(name)) {
+
+                }
+                break;
+            default:
+                System.out.println("Invalid delete command format");
+        }
 
     }
 
@@ -96,9 +114,11 @@ public class ProcessManager {
     }
 
     private void displayPods(Set<Pod> pods) {
-        System.out.println("POD     = CPU = MEMORY = AV. CPU = AV. MEM = LATENCY = NUM. PODS");
+        int emptySize = 20 - "POD".length();
+        String empty = " ".repeat(Math.max(0, emptySize));
+        System.out.println("POD" + empty + "CPU = MEMORY = LATENCY = STATUS    = WORKER");
         for (Pod p : pods) {
-            System.out.println(p.toString());
+            System.out.println(p.toString() + "     " + Main.currentK8.getWorkerByPodName(p));
         }
     }
 

@@ -7,4 +7,8 @@ public class Container {
     public void runContainer() {
 
     }
+
+    public void stopContainer() {
+
+    }
 }

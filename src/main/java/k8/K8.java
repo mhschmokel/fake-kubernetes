@@ -5,14 +5,15 @@ import lombok.Getter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-public class K8 {
+public class K8 extends Thread {
     @Getter
     final private UUID uuid = UUID.randomUUID();
-
-    @Getter
     final private String name;
     private Cluster cluster;
+
+    private boolean initScheduler = false;
 
     public K8(String name) {
         this.name = name;
@@ -27,8 +28,20 @@ public class K8 {
             System.out.println("A Cluster already exists");
             return;
         }
-
         cluster = new Cluster(name, scheduler);
+        this.initScheduler = true;
+    }
+
+    @Override
+    public void run() {
+        while(!initScheduler){
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (Exception exception) {
+                System.out.println(exception.toString());
+            }
+        }
+        this.cluster.runScheduler();
     }
 
     public void schedulePods(Set<Pod> pods) {
@@ -56,11 +69,24 @@ public class K8 {
     }
 
     public Set<Pod> getPods() {
-        Set<Pod> pods = new HashSet<>();
-        for (Node n : cluster.getWorkerNodes()) {
-            pods.addAll(n.getPods());
-        }
-        return pods;
+        return this.cluster.getPods();
+    }
+
+    public void deletePodByName(String name) {
+        this.cluster.deletePodByName(name);
+    }
+
+    public void deleteNodeByName(String name) {
+
+    }
+
+    public String getWorkerByPodName(Pod p) {
+        Node node = this.cluster.getWorkerByPod(p);
+        return node != null ? node.getName() : "-";
+    }
+
+    public void exit() {
+        this.cluster.stopScheduler();
     }
 
     public void deleteCluster() {

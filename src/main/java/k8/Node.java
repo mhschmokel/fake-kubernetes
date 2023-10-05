@@ -4,19 +4,19 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
 @Getter
-@EqualsAndHashCode
 public abstract class Node {
     final private UUID uuid = UUID.randomUUID();
     final private String name;
     final private NodeType nodeType;
     final private double totalCPU;
     final private double totalMemory;
-    private double availableCPU;
-    private double availableMemory;
+    private double cpuInUse;
+    private double memoryInUse;
     final private double latency;
     final private Set<Pod> pods = new HashSet<Pod>();
 
@@ -25,8 +25,8 @@ public abstract class Node {
         this.nodeType = nodeType;
         this.totalCPU = totalCPU;
         this.totalMemory = totalMemory;
-        this.availableCPU = totalCPU;
-        this.availableMemory = totalMemory;
+        this.cpuInUse = 0;
+        this.memoryInUse = 0;
         this.latency = 0;
     }
 
@@ -35,23 +35,23 @@ public abstract class Node {
         this.nodeType = nodeType;
         this.totalCPU = totalCPU;
         this.totalMemory = totalMemory;
-        this.availableCPU = totalCPU;
-        this.availableMemory = totalMemory;
+        this.cpuInUse = 0;
+        this.memoryInUse = 0;
         this.latency = latency;
     }
 
     public void addPod(Pod p) {
         if(pods.add(p)) {
-            this.availableCPU -= p.getRequiredCPU();
-            this.availableMemory -= p.getRequiredMemory();
+            this.cpuInUse += p.getRequiredCPU();
+            this.memoryInUse += p.getRequiredMemory();
             p.setPodStatus(PodStatus.RUNNING);
         }
     }
 
     public void deletePod(Pod p) {
         if(pods.remove(p)) {
-            this.availableCPU += p.getRequiredCPU();
-            this.availableMemory += p.getRequiredMemory();
+            this.cpuInUse -= p.getRequiredCPU();
+            this.memoryInUse -= p.getRequiredMemory();
             p.setPodStatus(PodStatus.STOPPED);
         }
     }
@@ -61,16 +61,38 @@ public abstract class Node {
         pods.clear();
     }
 
+    public boolean hasPod(Pod pod) {
+        for (Pod p : this.pods) {
+            if (p.equals(pod)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean hasEnoughMemory(Pod p) {
-        return p.getRequiredMemory() <= this.totalMemory - this.availableMemory;
+        return p.getRequiredMemory() <= this.totalMemory - this.memoryInUse;
     }
 
     public boolean hasEnoughCPU(Pod p) {
-        return p.getRequiredCPU() <= this.totalCPU - this.availableCPU;
+        return p.getRequiredCPU() <= this.totalCPU - this.cpuInUse;
     }
 
     public boolean isLatencyAcceptable(Pod p) {
-        return p.getMaximumLatency() <= this.latency;
+        return p.getMaximumLatency() >= this.latency;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Node node = (Node) object;
+        return Objects.equals(uuid, node.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
     }
 
     @Override
@@ -81,8 +103,8 @@ public abstract class Node {
                 + this.getNodeType().toString() + " ".repeat(3)
                 + this.getTotalCPU() + " ".repeat(3)
                 + this.getTotalMemory() + " ".repeat(5)
-                + this.getAvailableCPU() + " ".repeat(5)
-                + this.getAvailableMemory() + " ".repeat(5)
+                + (this.getTotalCPU() - this.getCpuInUse()) + " ".repeat(5)
+                + (this.getTotalMemory() - this.getMemoryInUse()) + " ".repeat(5)
                 + this.getLatency() + " ".repeat(8)
                 + numOfPods;
     }

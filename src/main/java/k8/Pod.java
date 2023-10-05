@@ -7,10 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
-@EqualsAndHashCode
+//@EqualsAndHashCode
 public class Pod {
     final private UUID uuid = UUID.randomUUID();
     final private String name;
@@ -45,11 +46,25 @@ public class Pod {
     }
 
     @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Pod pod = (Pod) object;
+        return Objects.equals(uuid, pod.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
+    }
+
+    @Override
     public String toString() {
-        return this.getName() + "     "
-        + this.getRequiredCPU() + "     "
+        int emptySize = 20 - this.getName().length();
+        return this.getName() + " ".repeat(Math.max(0, emptySize))
+        + this.getRequiredCPU() + " ".repeat(3)
         + this.getRequiredMemory() + "     "
-        + this.getMaximumLatency() + "     "
+        + this.getMaximumLatency() + " ".repeat(6)
         + this.getPodStatus();
     }
 }
