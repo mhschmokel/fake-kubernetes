@@ -22,7 +22,7 @@ public class Console extends Thread {
     public void run() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.print("> ");
+            System.out.print("\n> ");
             String command = scanner.nextLine();
             if (command.equals("exit")) {
                 Main.currentK8.exit();

@@ -74,21 +74,21 @@ public class ProcessManager {
         String name = argMap.get("-n");
 
         switch (ArgumentParser.parseCommand(args)) {
-            case "pod":
+            case "pod": //delete pod -n pod1
                 if (!this.hasMissingArgs(name)) {
                     Main.currentK8.deletePodByName(name);
                     System.out.println("Pod " + name + " deleted.");
-                    break;
                 }
-            case "node":
+                break;
+            case "node": //delete node -n node1
                 if (!this.hasMissingArgs(name)) {
-
+                    Main.currentK8.deleteNodeByName(name);
+                    System.out.println("Node " + name + " deleted.");
                 }
                 break;
             default:
                 System.out.println("Invalid delete command format");
         }
-
     }
 
     public void get(String[] args) {

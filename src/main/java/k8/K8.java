@@ -77,7 +77,7 @@ public class K8 extends Thread {
     }
 
     public void deleteNodeByName(String name) {
-
+        this.cluster.deleteNodeByName(name);
     }
 
     public String getWorkerByPodName(Pod p) {
