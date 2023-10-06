@@ -3,7 +3,9 @@ package k8;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -18,7 +20,7 @@ public abstract class Node {
     private double cpuInUse;
     private double memoryInUse;
     final private double latency;
-    final private Set<Pod> pods = new HashSet<Pod>();
+    final private List<Pod> pods = new ArrayList<>();
 
     Node(String name, NodeType nodeType, double totalCPU, double totalMemory){
         this.name = name;

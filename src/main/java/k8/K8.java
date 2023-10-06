@@ -3,6 +3,8 @@ package k8;
 import lombok.Getter;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -44,8 +46,8 @@ public class K8 extends Thread {
         this.cluster.runScheduler();
     }
 
-    public void schedulePods(Set<Pod> pods) {
-        this.cluster.schedulePods(pods);
+    public void schedulePods(List<Pod> pods) {
+        this.cluster.addPods(pods);
     }
 
     public void schedulePod(Pod p) {
@@ -68,7 +70,7 @@ public class K8 extends Thread {
         return this.cluster.getNodes();
     }
 
-    public Set<Pod> getPods() {
+    public List<Pod> getPods() {
         return this.cluster.getPods();
     }
 
@@ -83,6 +85,10 @@ public class K8 extends Thread {
     public String getWorkerByPodName(Pod p) {
         Node node = this.cluster.getWorkerByPod(p);
         return node != null ? node.getName() : "-";
+    }
+
+    public boolean hasCluster() {
+        return !Objects.isNull(this.cluster);
     }
 
     public void exit() {

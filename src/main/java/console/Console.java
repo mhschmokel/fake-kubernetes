@@ -48,6 +48,9 @@ public class Console extends Thread {
             case "get":
                 processManager.get(tokens);
                 break;
+            case "run":
+                processManager.run(tokens);
+                break;
             default:
                 System.out.println("Invalid command.");
         }
@@ -69,7 +72,7 @@ public class Console extends Thread {
 //
 //    public void displayAllPods(Cluster cluster) {
 //        Set<Node> nodes = cluster.getControlPlane().getNodes();
-//        Set<Pod> pods = new HashSet<>();
+//        List<Pod> pods = new HashSet<>();
 //
 //        System.out.println("===== PODS =====");
 //        System.out.println("PODS ===== REQUIRED CPU = REQUIRED MEMORY = LATENCY = STATUS");

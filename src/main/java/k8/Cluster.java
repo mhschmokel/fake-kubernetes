@@ -16,7 +16,7 @@ public class Cluster {
     final private String name;
     final private Scheduler scheduler;
     final private Set<Node> nodes = new HashSet<Node>();
-    final private Set<Pod> pods = new HashSet<>();
+    final private List<Pod> pods = new ArrayList<>();
 
     private boolean stopScheduler = false;
 
@@ -37,15 +37,21 @@ public class Cluster {
         }
     }
 
-    private Set<Pod> getPendingPods() {
+    private List<Pod> getPendingPods() {
         return this.pods.stream()
                 .filter(p -> p.getPodStatus() == PodStatus.PENDING)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    public void schedulePods(Set<Pod> pods) {
+    public void schedulePods(List<Pod> pods) {
         for (Pod p : pods) {
             this.scheduler.schedule(getWorkerNodes(), p);
+        }
+    }
+
+    public void addPods(List<Pod> pods) {
+        for (Pod p : pods) {
+            this.schedulePod(p);
         }
     }
 
@@ -77,6 +83,7 @@ public class Cluster {
         for(Node n : nodes) {
             n.deletePod(p);
         }
+        p.setPodStatus(PodStatus.STOPPED);
     }
 
     public void deletePodByName(String name) {
@@ -84,10 +91,12 @@ public class Cluster {
     }
 
     public Pod getPodByName(String name) {
-        return this.pods.stream()
-                    .filter(p -> p.getName().equals(name))
-                    .findFirst()
-                    .get();
+        for (Pod p : this.pods) {
+            if (p.getName().equals(name)) {
+                return p;
+            }
+        }
+        return new Pod("dummy", 0, 0, null);
     }
 
     public void deleteNodeByName(String name) {
@@ -95,10 +104,12 @@ public class Cluster {
     }
 
     public Node getNodeByName(String name) {
-        return this.nodes.stream()
-                .filter(n -> n.getName().equals(name))
-                .findFirst()
-                .get();
+        for (Node n : this.nodes) {
+            if (n.getName().equals(name)) {
+                return n;
+            }
+        }
+        return null;
     }
 
     public void stopScheduler() {
